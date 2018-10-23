@@ -1,58 +1,51 @@
-from sommet import Sommet
-from arrete import Arrete
+from node import Node
+from edge import Edge
 
 
 class Graph:
 
     def __init__(self, fileName):
         self.fileName = fileName
-        self.sommets_read = []
-        self.arretes_read = []
-        self.sommets = []
-        self.arretes = []
+        self.nodes = []
+        self.edges = []
+        self.linkedNodes = {}
+
+    def createNode(self, numero, recharge):
+        node = node(numero, recharge)
+        self.nodes.append(node)
+    
+    def createEdge(self, node1, node2, time):
+        edge = edge(self.nodes[node1], self.nodes[node2], time)
+        self.edges.append(edge)
 
     def readFile(self):
         with open(self.fileName) as file:
             for line in file:
                 if line != '\n':
                     words = [word.strip() for word in line.split(',')]
-                    self.sommets_read.append(words)
+                    self.createNode(words[0], words[1])
                 else:
                     break
             for line in file:
-                self.arretes_read.append(
-                    [word.strip() for word in line.split(',')]
-                )
+                    words = [word.strip() for word in line.split(',')]
+                    node1 = int(words[0]) - 1
+                    node2 = int(words[1]) - 1
+                    time = int(words[2])
+                    self.createEdge(node1, node2, time)
         file.close()
     
     def printGraph(self):
-        for s in self.sommets:
-            print('(sommet' + s.getNumber() +')')
+        print(self.linkedNodes)
 
     def createGraph(self):
         self.readFile()
-        for s in self.sommets_read:
-            sommet = Sommet(s[0], s[1])
-            self.sommets.append(sommet)
+        for edge in self.edges:
+            if linkedNodes[edge.getDeparture] is None:
+                linkedNodes[edge.getDeparture] = [edge.getDestination]
+            else:
+                linkedNodes[edge.getDeparture].append(edge.getDestination)
 
-        for a in self.arretes_read:
-            sommet1 = int(a[0]) - 1
-            sommet2 = int(a[1]) - 1
-            time = int(a[2])
-            arrete = Arrete(self.sommets[sommet1], self.sommets[sommet2], time)
-            self.arretes.append(arrete)
-
-    def adjacence(self,a,b):
-        for s in self.arretes:
-            if (s.departure == a & s.destination ==b) | (s.departure == b & s.destination ==a):
-                return 1
-
-    def trouverAdjacents(self, a):
-        sommetsAdjacents = []
-        arretesAdjacentes = []
-        for s in self.sommets:
-            if self.adjacence(self,a,s):
-                sommetsAdjacents.append(s)
-        return sommetsAdjacents
-
-    def plusCourtChemin(self, a):
+    def getTime(self, node1, node2):
+        for edge in self.edges:
+            if (edge.departure == node1 & edge.destination == node2) | (edge.departure == node2 & edge.destination == node1):
+                return edge.time

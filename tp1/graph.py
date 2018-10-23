@@ -55,4 +55,33 @@ class Graph:
                 sommetsAdjacents.append(s)
         return sommetsAdjacents
 
-    def plusCourtChemin(self, a):
+    def plusCourtChemin(self, origine, destination):
+        assert origine in self.sommets
+
+        distance = {sommet: inf for sommet in self.sommets}
+        sommet_precedent = {sommet: None for sommet in self.sommets}
+        distance[origine] = 0
+        sommets = self.sommets.copy()
+
+        while sommets:
+            sommetActif = min(sommets, key=lambda sommet: distance[sommet])
+
+            if distance[sommetActif] == inf:
+                break;
+
+            for adjacent, temps in self.adjacents[sommetActif]:
+                route_alternative = distance[sommetActif] + temps
+
+                if route_alternative < distance[adjacent]:
+                    distance[adjacent] = route_alternative
+                    sommet_precedent[adjacent] = sommetActif
+
+            sommets.remove(sommetActif)
+
+            pathS, sommetActif = deque(), destination
+            while sommet_precedent[sommetActif] is not None:
+                pathS.appendleft(sommetActif)
+                sommetActif = sommet_precedent[sommetActif]
+            if pathS:
+                pathS.appendleft(sommetActif)
+            return pathS

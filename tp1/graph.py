@@ -11,17 +11,17 @@ class Graph:
         self.linkedNodes = {}
 
     def createNode(self, numero, recharge):
-        node = node(numero, recharge)
+        node = Node(numero, recharge)
         self.nodes.append(node)
     
     def createEdge(self, node1, node2, time):
-        edge = edge(self.nodes[node1], self.nodes[node2], time)
+        edge = Edge(self.nodes[node1], self.nodes[node2], time)
         self.edges.append(edge)
 
     def readFile(self):
         with open(self.fileName) as file:
             for line in file:
-                if line != '\n':
+                if 2 < len(line):
                     words = [word.strip() for word in line.split(',')]
                     self.createNode(words[0], words[1])
                 else:
@@ -35,17 +35,22 @@ class Graph:
         file.close()
     
     def printGraph(self):
-        print(self.linkedNodes)
+        for i in self.linkedNodes:
+            print(i.getNumber())
+            for j in self.linkedNodes[i]:
+                print('\t' + j.getNumber()+ ',' + self.getTime(i, j))
+
 
     def createGraph(self):
         self.readFile()
         for edge in self.edges:
-            if linkedNodes[edge.getDeparture] is None:
-                linkedNodes[edge.getDeparture] = [edge.getDestination]
+            if edge.getDeparture() in self.linkedNodes:
+                self.linkedNodes[edge.getDeparture()].append(edge.getDestination())
             else:
-                linkedNodes[edge.getDeparture].append(edge.getDestination)
+                self.linkedNodes[edge.getDeparture()] = [edge.getDestination()]
+
 
     def getTime(self, node1, node2):
         for edge in self.edges:
-            if (edge.departure == node1 & edge.destination == node2) | (edge.departure == node2 & edge.destination == node1):
-                return edge.time
+            if (edge.getDeparture() == node1 and edge.getDestination() == node2) or (edge.getDeparture() == node2 and edge.getDestination() == node1):
+                return str(edge.getTime())

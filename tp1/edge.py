@@ -4,7 +4,7 @@ class Edge:
         self.node2 = node2
         self.time = time
     
-    def getTemps(self):
+    def getTime(self):
         return self.time
     
     def getDeparture(self):

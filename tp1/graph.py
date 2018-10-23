@@ -1,6 +1,7 @@
 from sommet import Sommet
 from arrete import Arrete
 
+
 class Graph:
 
     def __init__(self, fileName):
@@ -40,3 +41,18 @@ class Graph:
             time = int(a[2])
             arrete = Arrete(self.sommets[sommet1], self.sommets[sommet2], time)
             self.arretes.append(arrete)
+
+    def adjacence(self,a,b):
+        for s in self.arretes:
+            if (s.departure == a & s.destination ==b) | (s.departure == b & s.destination ==a):
+                return 1
+
+    def trouverAdjacents(self, a):
+        sommetsAdjacents = []
+        arretesAdjacentes = []
+        for s in self.sommets:
+            if self.adjacence(self,a,s):
+                sommetsAdjacents.append(s)
+        return sommetsAdjacents
+
+    def plusCourtChemin(self, a):

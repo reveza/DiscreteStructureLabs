@@ -36,9 +36,12 @@ class Graph:
     
     def printGraph(self):
         for i in self.linkedNodes:
-            print(i.getNumber())
+            str = '('
+            str += i.getNumber() + ', ' + i.getRecharge() + ', ('
             for j in self.linkedNodes[i]:
-                print('\t' + j.getNumber()+ ',' + self.getTime(i, j))
+                str += ('(' + j.getNumber()+ ', ' + self.getTime(i, j)) + '), '
+            str = str[:-2] + '))'
+            print(str)
 
 
     def createGraph(self):
@@ -54,3 +57,6 @@ class Graph:
         for edge in self.edges:
             if (edge.getDeparture() == node1 and edge.getDestination() == node2) or (edge.getDeparture() == node2 and edge.getDestination() == node1):
                 return str(edge.getTime())
+
+    def node(self, num):
+        return self.nodes[num-1]

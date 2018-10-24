@@ -37,9 +37,9 @@ class Graph:
     def printGraph(self):
         for i in self.linkedNodes:
             str = '('
-            str += i.getNumber() + ', ' + i.getRecharge() + ', ('
+            str += i + ', ' + self.node(i).getRecharge() + ', ('
             for j in self.linkedNodes[i]:
-                str += ('(' + j.getNumber()+ ', ' + self.getTime(i, j)) + '), '
+                str += ('(' + j + ', ' + self.getTime(i, j)) + '), '
             str = str[:-2] + '))'
             print(str)
 
@@ -47,16 +47,16 @@ class Graph:
     def createGraph(self):
         self.readFile()
         for edge in self.edges:
-            if edge.getDeparture() in self.linkedNodes:
-                self.linkedNodes[edge.getDeparture()].append(edge.getDestination())
+            if edge.getDeparture().getNumber() in self.linkedNodes:
+                self.linkedNodes[edge.getDeparture().getNumber()].append(edge.getDestination().getNumber())
             else:
-                self.linkedNodes[edge.getDeparture()] = [edge.getDestination()]
+                self.linkedNodes[edge.getDeparture().getNumber()] = [edge.getDestination().getNumber()]
 
 
     def getTime(self, node1, node2):
         for edge in self.edges:
-            if (edge.getDeparture() == node1 and edge.getDestination() == node2) or (edge.getDeparture() == node2 and edge.getDestination() == node1):
+            if (edge.getDeparture().getNumber() == node1 and edge.getDestination().getNumber() == node2) or (edge.getDeparture().getNumber() == node2 and edge.getDestination().getNumber() == node1):
                 return str(edge.getTime())
 
     def node(self, num):
-        return self.nodes[num-1]
+        return self.nodes[int(num)-1]

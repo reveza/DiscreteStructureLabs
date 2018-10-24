@@ -10,4 +10,12 @@ while True:
         graph1.createGraph()
         graph1.printGraph()
     elif entree == 'b':
+        print(graph1.node(1))
         graph1.plusCourtChemin()
+    elif entree == 'c':
+        rin = input()
+    elif entree == 'd':
+        print('fin du programme')
+        break
+    else:
+        print('entree invalide')

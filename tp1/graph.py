@@ -10,6 +10,12 @@ class Graph:
         self.edges = []
         self.linkedNodes = {}
 
+    # def __init__(self, fileName, nodes, edges):
+    #     self.fileName = fileName
+    #     self.nodes = nodes
+    #     self.edges = edges
+    #     self.linkedNodes = {}
+
     def createNode(self, numero, recharge):
         node = Node(numero, recharge)
         self.nodes.append(node)
@@ -51,6 +57,11 @@ class Graph:
                 self.linkedNodes[edge.getDeparture().getNumber()].append(edge.getDestination().getNumber())
             else:
                 self.linkedNodes[edge.getDeparture().getNumber()] = [edge.getDestination().getNumber()]
+        for edge in self.edges:
+            if edge.getDestination().getNumber() in self.linkedNodes:
+                self.linkedNodes[edge.getDestination().getNumber()].append(edge.getDeparture().getNumber())
+            else:
+                self.linkedNodes[edge.getDestination().getNumber()] = [edge.getDeparture().getNumber()]
 
 
     def getTime(self, node1, node2):
@@ -60,3 +71,7 @@ class Graph:
 
     def node(self, num):
         return self.nodes[int(num)-1]
+
+    def extraireSousGraphe(self, root, type):
+
+        return

@@ -60,22 +60,23 @@ class Graph:
             self.readFile()
         for edge in self.edges:
             if edge.getDeparture().getNumber() in self.linkedNodes:
-                self.linkedNodes[edge.getDeparture().getNumber()].append(edge.getDestination().getNumber())
+                self.linkedNodes[edge.getDeparture().getNumber()].append(int(edge.getDestination().getNumber()))
             else:
                 self.linkedNodes[edge.getDeparture().getNumber()] = [edge.getDestination().getNumber()]
             if edge.getDestination().getNumber() in self.linkedNodes:
-                self.linkedNodes[edge.getDestination().getNumber()].append(edge.getDeparture().getNumber())
+                self.linkedNodes[edge.getDestination().getNumber()].append(int(edge.getDeparture().getNumber()))
             else:
-                self.linkedNodes[edge.getDestination().getNumber()] = [edge.getDeparture().getNumber()]
+                self.linkedNodes[edge.getDestination().getNumber()] = [int(edge.getDeparture().getNumber())]
 
 
     def getTime(self, node1, node2):
         for edge in self.edges:
             if (edge.getDeparture().getNumber() == node1 and edge.getDestination().getNumber() == node2) or (edge.getDeparture().getNumber() == node2 and edge.getDestination().getNumber() == node1):
-                return str(edge.getTime())
+                print(edge.getTime())
+                return edge.getTime()
 
-    def node(self, num):
-        return self.nodes[int(num)-1]
+    def getNode(self, num):
+        return self.nodes[num-1]
 
     def plusCourtChemin(self, departure, destination):
 
@@ -89,28 +90,38 @@ class Graph:
             distance.append(inf);
             lastNode.append(None);
 
-        distance[departure] = 0;
-        node = copy.deepcopy(self.linkedNodes)
+        distance[departure-1] = 0;
+        nodes = copy.deepcopy(self.linkedNodes)
 
         # neighbor.getNumber()  self.getTime(currentNode, neighbor))
 
-        while node:
+        while nodes:
 
-            currentNode = min(distance)
+            minDistance = min(distance);
+            currentNode = distance.index(minDistance);
 
-            if distance[distance.index(currentNode)] == inf:
+            if distance[currentNode] == inf:
                 break
 
-            for currentNode in node:
-                for neighbor in node[currentNode]:
-                    alternativePath = distance[distance.index(currentNode)] + self.getTime(node(currentNode), node(neighbor))
+            for currentNode in nodes:
+                for neighbor in nodes[currentNode]:
+                    intCurrentNode = int(currentNode)
+                    node1 = self.getNode(intCurrentNode)
+                    node2 = self.getNode(neighbor)
+
+                    print(self.getNode(neighbor))
+                    print(neighbor)
+                    print(intCurrentNode)
+                    print(self.getTime(node1, node2))
+
+                    alternativePath = distance[intCurrentNode-1] + self.getTime(neighbor, intCurrentNode)
                     # print(self.getTime(node(currentNode), node(neighbor)))
 
-                if alternativePath < distance[neighbor]:
-                    distance[neighbor] = alternativePath
-                    lastNode[neighbor] = currentNode
+                    if alternativePath < distance[neighbor-1]:
+                        distance[neighbor-1] = alternativePath
+                        lastNode[neighbor-1] = currentNode
 
-            node.remove(currentNode)
+            del nodes[currentNode]
 
             pathS, currentNode = deque(), destination
             while lastNode[currentNode] is not None:

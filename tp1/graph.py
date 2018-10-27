@@ -7,17 +7,19 @@ inf = float('inf')
 
 class Graph:
 
-    def __init__(self, fileName):
-        self.fileName = fileName
-        self.nodes = []
-        self.edges = []
+    def __init__(self, filename = None, nodes = None, edges = None):
+
+        self.fileName = filename;
+        if nodes==None:
+            self.nodes = []
+        else:
+            self.nodes=nodes
+        if edges ==None:
+            self.edges = []
+        else:
+            self.edges=edges
         self.linkedNodes = {}
 
-    # def __init__(self, fileName, nodes, edges):
-    #     self.fileName = fileName
-    #     self.nodes = nodes
-    #     self.edges = edges
-    #     self.linkedNodes = {}
 
     def createNode(self, numero, recharge):
         node = Node(numero, recharge)
@@ -27,12 +29,12 @@ class Graph:
         edge = Edge(self.nodes[node1], self.nodes[node2], time)
         self.edges.append(edge)
 
-    def readFile(self):
+    def readFile(self,):
         with open(self.fileName) as file:
             for line in file:
                 if 2 < len(line):
                     words = [word.strip() for word in line.split(',')]
-                    self.createNode(words[0], words[1])
+                    self.createNode(int(words[0]), int(words[1]))
                 else:
                     break
             for line in file:
@@ -45,22 +47,22 @@ class Graph:
     
     def printGraph(self):
         for i in self.linkedNodes:
-            str = '('
-            str += i + ', ' + self.node(i).getRecharge() + ', ('
+            string = '('
+            string += str(i) + ', ' + str(self.node(i).getRecharge()) + ', ('
             for j in self.linkedNodes[i]:
-                str += ('(' + j + ', ' + self.getTime(i, j)) + '), '
-            str = str[:-2] + '))'
-            print(str)
+                string += ('(' + str(j) + ', ' + str(self.getTime(i, j))) + '), '
+            string = string[:-2] + '))'
+            print(string)
 
 
     def createGraph(self):
-        self.readFile()
+        if self.fileName != None:
+            self.readFile()
         for edge in self.edges:
             if edge.getDeparture().getNumber() in self.linkedNodes:
                 self.linkedNodes[edge.getDeparture().getNumber()].append(edge.getDestination().getNumber())
             else:
                 self.linkedNodes[edge.getDeparture().getNumber()] = [edge.getDestination().getNumber()]
-        for edge in self.edges:
             if edge.getDestination().getNumber() in self.linkedNodes:
                 self.linkedNodes[edge.getDestination().getNumber()].append(edge.getDeparture().getNumber())
             else:

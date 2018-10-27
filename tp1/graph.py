@@ -1,6 +1,9 @@
 from node import Node
 from edge import Edge
+from collections import deque
+import copy
 
+inf = float('inf')
 
 class Graph:
 
@@ -71,6 +74,49 @@ class Graph:
 
     def node(self, num):
         return self.nodes[int(num)-1]
+
+    def plusCourtChemin(self, departure, destination):
+
+        # distance = {node: inf for node in self.linkedNodes}
+        # lastNode = {node: None for node in self.linkedNodes}
+
+        distance = []
+        lastNode = []
+
+        for node in self.linkedNodes:
+            distance.append(inf);
+            lastNode.append(None);
+
+        distance[departure] = 0;
+        node = copy.deepcopy(self.linkedNodes)
+
+        # neighbor.getNumber()  self.getTime(currentNode, neighbor))
+
+        while node:
+
+            currentNode = min(distance)
+
+            if distance[distance.index(currentNode)] == inf:
+                break
+
+            for currentNode in node:
+                for neighbor in node[currentNode]:
+                    alternativePath = distance[distance.index(currentNode)] + self.getTime(node(currentNode), node(neighbor))
+                    # print(self.getTime(node(currentNode), node(neighbor)))
+
+                if alternativePath < distance[neighbor]:
+                    distance[neighbor] = alternativePath
+                    lastNode[neighbor] = currentNode
+
+            node.remove(currentNode)
+
+            pathS, currentNode = deque(), destination
+            while lastNode[currentNode] is not None:
+                pathS.appendleft(currentNode)
+                currentNode = lastNode[currentNode]
+            if pathS:
+                pathS.appendleft(currentNode)
+            print(pathS)
 
     def extraireSousGraphe(self, root, type):
 

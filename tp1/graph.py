@@ -58,6 +58,8 @@ class Graph:
     def createGraph(self):
         if self.fileName != None:
             self.readFile()
+        for i in range(1, len(self.nodes)):
+             self.linkedNodes[i] = []
         for edge in self.edges:
             if edge.getDeparture().getNumber() in self.linkedNodes:
                 self.linkedNodes[edge.getDeparture().getNumber()].append(edge.getDestination().getNumber())
@@ -72,53 +74,94 @@ class Graph:
     def getTime(self, node1, node2):
         for edge in self.edges:
             if (edge.getDeparture().getNumber() == node1 and edge.getDestination().getNumber() == node2) or (edge.getDeparture().getNumber() == node2 and edge.getDestination().getNumber() == node1):
-                return str(edge.getTime())
+                return edge.getTime()
 
     def node(self, num):
         return self.nodes[int(num)-1]
 
-    def plusCourtChemin(self, departure, destination):
+    def plusCourtChemin(self, categorie, depart, destination):
 
-        # distance = {node: inf for node in self.linkedNodes}
-        # lastNode = {node: None for node in self.linkedNodes}
+        distance = [inf]
+        cheminInclut = [None]
+        parent = [None]
+        for node in self.linkedNodes:
+            distance.append(inf)
+            cheminInclut.append(False)
+            parent.append(None)
+        parent[0] = -1
 
-        distance = []
-        lastNode = []
+        distance[depart] = 0
 
         for node in self.linkedNodes:
-            distance.append(inf);
-            lastNode.append(None);
 
-        distance[departure] = 0;
-        node = copy.deepcopy(self.linkedNodes)
+            min = inf
+            minIndex = 1
+            for key in self.linkedNodes:
+                if cheminInclut[key] is False and distance[key] < min:
+                    min = distance[key]
+                    minIndex = key
 
-        # neighbor.getNumber()  self.getTime(currentNode, neighbor))
+            cheminInclut[minIndex] = True
 
-        while node:
+            for i in self.linkedNodes:
 
-            currentNode = min(distance)
+                if (not cheminInclut[i] and i in self.linkedNodes[minIndex] and
+                        distance[minIndex] + self.getTime(minIndex, i) < distance[i]):
+                    parent[i] = minIndex
+                    distance[i] = distance[minIndex] + self.getTime(minIndex, i)
+        nouveauNodes = []
+        src=1
+        print( "\n" + str(src) + "-> " + str(destination) + '\t' + str(distance[destination]))
+        self.printChemin(parent, destination)
 
-            if distance[distance.index(currentNode)] == inf:
-                break
+    def printChemin(self, parent, j):
 
-            for currentNode in node:
-                for neighbor in node[currentNode]:
-                    alternativePath = distance[distance.index(currentNode)] + self.getTime(node(currentNode), node(neighbor))
-                    # print(self.getTime(node(currentNode), node(neighbor)))
-
-                if alternativePath < distance[neighbor]:
-                    distance[neighbor] = alternativePath
-                    lastNode[neighbor] = currentNode
-
-            node.remove(currentNode)
-
-            pathS, currentNode = deque(), destination
-            while lastNode[currentNode] is not None:
-                pathS.appendleft(currentNode)
-                currentNode = lastNode[currentNode]
-            if pathS:
-                pathS.appendleft(currentNode)
-            print(pathS)
+        if parent[j] == -1 or parent[j] == None:
+            return;
+        self.printChemin(parent,parent[j])
+        print('->' + str(j))
+    # def plusCourtChemin(self, departure, destination):
+    #
+    #     # distance = {node: inf for node in self.linkedNodes}
+    #     # lastNode = {node: None for node in self.linkedNodes}
+    #
+    #     distance = []
+    #     lastNode = []
+    #
+    #     for node in self.linkedNodes:
+    #         distance.append(inf);
+    #         lastNode.append(None);
+    #
+    #     distance[departure] = 0;
+    #     node = copy.deepcopy(self.linkedNodes)
+    #
+    #     # neighbor.getNumber()  self.getTime(currentNode, neighbor))
+    #
+    #     while node:
+    #
+    #         currentNode = min(distance)
+    #
+    #         if distance[distance.index(currentNode)] == inf:
+    #             break
+    #
+    #         for currentNode in node:
+    #             for neighbor in node[currentNode]:
+    #                 alternativePath = distance[distance.index(currentNode)] + self.getTime(node(currentNode), node(neighbor))
+    #                 # print(self.getTime(node(currentNode), node(neighbor)))
+    #
+    #             if alternativePath < distance[neighbor]:
+    #                 distance[neighbor] = alternativePath
+    #                 lastNode[neighbor] = currentNode
+    #
+    #         node.remove(currentNode)
+    #
+    #         pathS, currentNode = deque(), destination
+    #         while lastNode[currentNode] is not None:
+    #             pathS.appendleft(currentNode)
+    #             currentNode = lastNode[currentNode]
+    #         if pathS:
+    #             pathS.appendleft(currentNode)
+    #         print(pathS)
 
     def extraireSousGraphe(self, root, type):
 

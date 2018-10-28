@@ -59,7 +59,6 @@ class Graph:
                 if times[current] + x.time < times[x.dest]:
                     times[x.dest] = times[current] + x.time
                     previous[x.dest] = current
-                    print(f"Time to dest: {times[x.dest]} from {x.dest}")
 
         currPath = destination
         path = [currPath]

@@ -44,20 +44,22 @@ class Graph:
         print(f"({key}, {'(, '.join([f'({x.dest}, {x.time})' for x in edges])})")
 
     def dijkstra(self, source, destination):
-        distances = {key: 9999 for key in self.adjDict.keys()}
+        times = {key: 9999 for key in self.adjDict.keys()}
         previous = {key: -1 for key in self.adjDict.keys()}
 
-        distances[source] = 0
+        times[source] = 0
         edges = set(self.adjDict.keys())
 
         while len(edges) > 0:
-            current = min(edges, key=lambda vertex: distances[vertex])
+            current = min(edges, key=lambda edge: times[edge])
+            print(f"Current {current} time: {times[current]}")
             edges.remove(current)
 
             for x in self.adjDict[current]:
-                if distances[current] + x.time < distances[x.dest]:
-                    distances[x.dest] = distances[current] + x.time
+                if times[current] + x.time < times[x.dest]:
+                    times[x.dest] = times[current] + x.time
                     previous[x.dest] = current
+                    print(f"Time to dest: {times[x.dest]} from {x.dest}")
 
         currPath = destination
         path = [currPath]
@@ -65,4 +67,4 @@ class Graph:
             currPath = previous[currPath]
             path.append(currPath)
 
-        print(f"Cost: {distances[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")
+        print(f"Cost: {times[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")

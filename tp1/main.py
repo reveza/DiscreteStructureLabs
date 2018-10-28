@@ -2,7 +2,7 @@ from Graph import Graph
 
 g = Graph("centresLocaux.txt")
 
-g.printGraph()
+# g.printGraph()
 start = 1
 destination = 23
 g.dijkstra(start, destination)

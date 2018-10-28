@@ -1,6 +1,11 @@
-from graph import Graph
+from Graph import Graph
 
-printGraph()
+g = Graph("centresLocaux.txt")
+
+g.printGraph()
+start = 1
+destination = 23
+g.dijkstra(start, destination)
 
 # menu = '(a) Mettre a jour la carte.\n(b) Determiner le plus court chemin securitaire.\n'
 # menu += '(c) Extraire un sous-graphe.\n(d) Quitter.\n'

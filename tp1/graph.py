@@ -1,105 +1,68 @@
-from node import Node
-from edge import Edge
-from collections import deque
+from Edge import Edge
 import copy
 
-inf = float('inf')    
-
+# {
+#     1: [Node(1,2,3,4), Node(1,3,4,5)],
+#     2: [Node(2,8,3,4), Node(2,3,4,5)],
+# }
 class Graph:
 
     def __init__(self, fileName):
-        self.fileName = fileName
-        self.nodes = []
-        self.edges = []
-        self.linkedNodes = {}
+        self.adjDict = {}
+        self.readFile(fileName)
 
-    # def __init__(self, fileName, nodes, edges):
-    #     self.fileName = fileName
-    #     self.nodes = nodes
-    #     self.edges = edges
-    #     self.linkedNodes = {}
+    def createEdge(self, source, dest, time, recharge):
+        edge = Edge(source, dest, time, recharge)
+        if edge.source in self.adjDict:
+            self.adjDict[edge.source].append(edge)
+        else:
+            self.adjDict[edge.source] = [edge]
 
-    def createNode(self, numero, recharge):
-        node = Node(numero, recharge)
-        self.nodes.append(node)
-    
-    def createEdge(self, node1, node2, time):
-        edge = Edge(self.nodes[node1], self.nodes[node2], time)
-        self.edges.append(edge)
+    def readFile(self, fileName):
+        nodes = {}
+        with open(fileName) as file:
+            line = file.readline()
+            while line != "\n":
+                words = [word.strip() for word in line.split(',')]
+                nodes[int(words[0])] = words[1] == "1"
+                line = file.readline()
 
-    def readFile(self):
-        with open(self.fileName) as file:
             for line in file:
-                if 2 < len(line):
-                    words = [word.strip() for word in line.split(',')]
-                    self.createNode(words[0], words[1])
-                else:
-                    break
-            for line in file:
-                    words = [word.strip() for word in line.split(',')]
-                    node1 = int(words[0]) - 1
-                    node2 = int(words[1]) - 1
-                    time = int(words[2])
-                    self.createEdge(node1, node2, time)
+                words = [word.strip() for word in line.split(',')]
+                source = int(words[0])
+                dest = int(words[1])
+                time = int(words[2])
+                self.createEdge(source, dest, time, nodes[source])
+                self.createEdge(dest, source, time, nodes[dest])
         file.close()
-    
+
     def printGraph(self):
-        for departure in self.linkedNodes:
-            print(departure)
-            string = '('
-            string += departure.numero + ', ' + departure.recharge + ', ('
+        for key, edges in self.adjDict.items():
+            self.printNode(key, edges)
 
-            for destination in self.linkedNodes[departure]:
-                string += ('(' + destination + ', ' + destination.time + '), '
+    def printNode(self, key, edges):
+        print(f"({key}, {'(, '.join([f'({x.dest}, {x.time})' for x in edges])})")
 
-            # string = string[:-2] + '))'
+    def dijkstra(self, source, destination):
+        distances = {key: 9999 for key in self.adjDict.keys()}
+        previous = {key: -1 for key in self.adjDict.keys()}
 
-            print(string)
+        distances[source] = 0
+        edges = set(self.adjDict.keys())
 
-    # {
-    #     1: [Edge(1,2,99), Edge(1,3, 60)],
-    #     2: [Edge(2,4,9), Edge(2,1, 99)]
-    # }
+        while len(edges) > 0:
+            current = min(edges, key=lambda vertex: distances[vertex])
+            edges.remove(current)
 
-    def createGraph(self):
-        self.readFile()
-        for edge in self.edges:
-            if edge.departure in self.linkedNodes:
-                self.linkedNodes[edge.departure].append(edge)
-            else:
-                self.linkedNodes[edge.departure] = [edge]
+            for x in self.adjDict[current]:
+                if distances[current] + x.time < distances[x.dest]:
+                    distances[x.dest] = distances[current] + x.time
+                    previous[x.dest] = current
 
-            if edge.destination in self.linkedNodes:
-                self.linkedNodes[edge.destination].append(edge)
-            else:
-                self.linkedNodes[edge.destination] = [edge]
+        currPath = destination
+        path = [currPath]
+        while currPath != source:
+            currPath = previous[currPath]
+            path.append(currPath)
 
-    def getTime(self, node1, node2):
-        for edge in self.edges:
-            if (edge.departure.number == node1 and edge.getDestination().number == node2) or (edge.departure.number == node2 and edge.getDestination().number == node1):
-                return str(edge.getTime())
-
-    def node(self, num):
-        return self.nodes[int(num)-1]
-
-    def plusCourtChemin(self, departure, destination):
-        shortestDistance = {}
-        predecessor = {}
-        unseenNodes = self.linkedNodes  #faire une copie
-        path = []
-        infiniti = 99999
-
-        for node in unseenNodes:
-            shortestDistance[node] = infiniti
-        shortestDistance[departure] = 0
-        
-        while unseenNodes:
-            minNode = None
-            for node in unseenNodes:
-                if minNode is None:
-                    minNode = node
-                elif shortestDistance[node] < shortestDistance[minNode]:
-                    minNode = node
-
-        for childNode, weight in 
-        
+        print(f"Cost: {distances[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")

@@ -1,48 +1,39 @@
-from node import Node
 from edge import Edge
-from collections import deque
 import copy
 
-inf = float('inf')
-
+# {
+#     1: [Node(1,2,3,4), Node(1,3,4,5)],
+#     2: [Node(2,8,3,4), Node(2,3,4,5)],
+# }
 class Graph:
 
-    def __init__(self, filename = None, nodes = None, edges = None):
+    def __init__(self, fileName):
+        self.adjDict = {}
+        self.readFile(fileName)
 
-        self.fileName = filename;
-        if nodes==None:
-            self.nodes = []
+    def createEdge(self, source, dest, time, recharge):
+        edge = Edge(source, dest, time, recharge)
+        if edge.source in self.adjDict:
+            self.adjDict[edge.source].append(edge)
         else:
-            self.nodes=nodes
-        if edges ==None:
-            self.edges = []
-        else:
-            self.edges=edges
-        self.linkedNodes = {}
+            self.adjDict[edge.source] = [edge]
 
+    def readFile(self, fileName):
+        nodes = {}
+        with open(fileName) as file:
+            line = file.readline()
+            while line != "\n":
+                words = [word.strip() for word in line.split(',')]
+                nodes[int(words[0])] = words[1] == "1"
+                line = file.readline()
 
-    def createNode(self, numero, recharge):
-        node = Node(numero, recharge)
-        self.nodes.append(node)
-    
-    def createEdge(self, node1, node2, time):
-        edge = Edge(self.nodes[node1], self.nodes[node2], time)
-        self.edges.append(edge)
-
-    def readFile(self,):
-        with open(self.fileName) as file:
             for line in file:
-                if 2 < len(line):
-                    words = [word.strip() for word in line.split(',')]
-                    self.createNode(int(words[0]), int(words[1]))
-                else:
-                    break
-            for line in file:
-                    words = [word.strip() for word in line.split(',')]
-                    node1 = int(words[0]) - 1
-                    node2 = int(words[1]) - 1
-                    time = int(words[2])
-                    self.createEdge(node1, node2, time)
+                words = [word.strip() for word in line.split(',')]
+                source = int(words[0])
+                dest = int(words[1])
+                time = int(words[2])
+                self.createEdge(source, dest, time, nodes[source])
+                self.createEdge(dest, source, time, nodes[dest])
         file.close()
     
     def printGraph(self):
@@ -142,28 +133,36 @@ class Graph:
 
             currentNode = min(distance)
 
-            if distance[distance.index(currentNode)] == inf:
-                break
+    def printGraph(self):
+        for key, edges in self.adjDict.items():
+            self.printNode(key, edges)
 
-            for currentNode in node:
-                for neighbor in node[currentNode]:
-                    alternativePath = distance[distance.index(currentNode)] + self.getTime(node(currentNode), node(neighbor))
-                    # print(self.getTime(node(currentNode), node(neighbor)))
 
-                if alternativePath < distance[neighbor]:
-                    distance[neighbor] = alternativePath
-                    lastNode[neighbor] = currentNode
+    def printNode(self, key, edges):
+        print(f"({key}, {'(, '.join([f'({x.dest}, {x.time})' for x in edges])})")
 
-            node.remove(currentNode)
+    def dijkstra(self, source, destination):
+        times = {key: 9999 for key in self.adjDict.keys()}
+        previous = {key: -1 for key in self.adjDict.keys()}
 
-            pathS, currentNode = deque(), destination
-            while lastNode[currentNode] is not None:
-                pathS.appendleft(currentNode)
-                currentNode = lastNode[currentNode]
-            if pathS:
-                pathS.appendleft(currentNode)
-            print(pathS)
+        times[source] = 0
+        edges = set(self.adjDict.keys())
 
-    def extraireSousGraphe(self, root, type):
+        while len(edges) > 0:
+            current = min(edges, key=lambda edge: times[edge])
+            print(f"Current {current} time: {times[current]}")
+            edges.remove(current)
 
-        return
+            for x in self.adjDict[current]:
+                if times[current] + x.time < times[x.dest]:
+                    times[x.dest] = times[current] + x.time
+                    previous[x.dest] = current
+                    print(f"Time to dest: {times[x.dest]} from {x.dest}")
+
+        currPath = destination
+        path = [currPath]
+        while currPath != source:
+            currPath = previous[currPath]
+            path.append(currPath)
+
+        print(f"Cost: {times[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")

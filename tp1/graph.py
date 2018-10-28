@@ -1,4 +1,4 @@
-from Edge import Edge
+from edge import Edge
 import copy
 
 # {
@@ -41,7 +41,7 @@ class Graph:
             self.printNode(key, edges)
 
     def printNode(self, key, edges):
-        print(f"({key}, {'(, '.join([f'({x.dest}, {x.time})' for x in edges])})")
+        print(f"({key}, ({', '.join([f'({x.dest}, {x.time})' for x in edges])}))")
 
     def dijkstra(self, source, destination):
         times = {key: 9999 for key in self.adjDict.keys()}

@@ -1,10 +1,7 @@
 from edge import Edge
-import copy
 
-# {
-#     1: [Node(1,2,3,4), Node(1,3,4,5)],
-#     2: [Node(2,8,3,4), Node(2,3,4,5)],
-# }
+inf = float('inf')
+
 class Graph:
 
     def __init__(self, fileName):
@@ -35,111 +32,13 @@ class Graph:
                 self.createEdge(source, dest, time, nodes[source])
                 self.createEdge(dest, source, time, nodes[dest])
         file.close()
-    
-    def printGraph(self):
-        for i in self.linkedNodes:
-            string = '('
-            string += str(i) + ', ' + str(self.node(i).getRecharge()) + ', ('
-            for j in self.linkedNodes[i]:
-                string += ('(' + str(j) + ', ' + str(self.getTime(i, j))) + '), '
-            string = string[:-2] + '))'
-            print(string)
-
-
-    def createGraph(self):
-        if self.fileName != None:
-            self.readFile()
-        for i in range(1, len(self.nodes)):
-             self.linkedNodes[i] = []
-        for edge in self.edges:
-            if edge.getDeparture().getNumber() in self.linkedNodes:
-                self.linkedNodes[edge.getDeparture().getNumber()].append(edge.getDestination().getNumber())
-            else:
-                self.linkedNodes[edge.getDeparture().getNumber()] = [edge.getDestination().getNumber()]
-            if edge.getDestination().getNumber() in self.linkedNodes:
-                self.linkedNodes[edge.getDestination().getNumber()].append(edge.getDeparture().getNumber())
-            else:
-                self.linkedNodes[edge.getDestination().getNumber()] = [edge.getDeparture().getNumber()]
-
-
-    def getTime(self, node1, node2):
-        for edge in self.edges:
-            if (edge.getDeparture().getNumber() == node1 and edge.getDestination().getNumber() == node2) or (edge.getDeparture().getNumber() == node2 and edge.getDestination().getNumber() == node1):
-                return edge.getTime()
-
-    def node(self, num):
-        return self.nodes[int(num)-1]
-
-    def djikstraLong(self, categorie, depart, destination):
-
-        distance = [inf]
-        cheminInclut = [None]
-        parent = [None]
-        for node in self.linkedNodes:
-            distance.append(inf)
-            cheminInclut.append(False)
-            parent.append(None)
-        parent[0] = -1
-
-        distance[depart] = 0
-
-        for node in self.linkedNodes:
-
-            min = inf
-            minIndex = 1
-            for key in self.linkedNodes:
-                if cheminInclut[key] is False and distance[key] < min:
-                    min = distance[key]
-                    minIndex = key
-
-            cheminInclut[minIndex] = True
-
-            for i in self.linkedNodes:
-
-                if (not cheminInclut[i] and i in self.linkedNodes[minIndex] and
-                        distance[minIndex] + self.getTime(minIndex, i) < distance[i]):
-                    parent[i] = minIndex
-                    distance[i] = distance[minIndex] + self.getTime(minIndex, i)
-        nouveauNodes = []
-        src=1
-        print( "\n" + str(src) + "-> " + str(destination) + '\t' + str(distance[destination]))
-        self.printChemin(parent, destination)
-
-    def printChemin(self, parent, j):
-
-        if parent[j] == -1 or parent[j] == None:
-            return;
-        self.printChemin(parent,parent[j])
-        print('->' + str(j))
-        
-    def plusCourtChemin(self, departure, destination):
-
-        # distance = {node: inf for node in self.linkedNodes}
-        # lastNode = {node: None for node in self.linkedNodes}
-
-        distance = []
-        lastNode = []
-
-        for node in self.linkedNodes:
-            distance.append(inf);
-            lastNode.append(None);
-
-        distance[departure] = 0;
-        node = copy.deepcopy(self.linkedNodes)
-
-        # neighbor.getNumber()  self.getTime(currentNode, neighbor))
-
-        while node:
-
-            currentNode = min(distance)
 
     def printGraph(self):
         for key, edges in self.adjDict.items():
             self.printNode(key, edges)
 
-
     def printNode(self, key, edges):
-        print(f"({key}, {'(, '.join([f'({x.dest}, {x.time})' for x in edges])})")
+        print(f"({key},  ({', '.join([f'({x.dest}, {x.time})' for x in edges])}))")
 
     def dijkstra(self, source, destination):
         times = {key: 9999 for key in self.adjDict.keys()}
@@ -166,3 +65,58 @@ class Graph:
             path.append(currPath)
 
         print(f"Cost: {times[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")
+
+
+    def plusLongChemin(self, categorie, depart, destination):
+
+        print(str(self.adjDict[1][2].time))
+        distance = [inf]
+        cheminInclut = [None]
+        parent = [None]
+        for node in self.adjDict:
+            distance.append(inf)
+            cheminInclut.append(False)
+            parent.append(None)
+        parent[1] = -1
+
+        distance[depart] = 0
+
+        for node in self.adjDict:
+
+            min = inf
+            minIndex = 1
+            for key in self.adjDict:
+                if cheminInclut[key] is False and distance[key] < min:
+                    min = distance[key]
+                    minIndex = key
+
+            cheminInclut[minIndex] = True
+
+            for i in self.adjDict:
+                time = 0
+                a = False
+                for j in self.adjDict[minIndex]:
+                    if (not cheminInclut[i] and i == j.dest
+                            and distance[minIndex] + j.time < distance[i]):
+                        a = True
+                        time = j.time
+                        parent[i] = minIndex
+                        distance[i] = distance[minIndex] + time
+
+        nouveauNodes = []
+        src=1
+        # print( "\n" + str(src) + "-> " + str(destination) + '\t' + str(distance[destination]))
+        # self.printChemin(parent, destination)
+        for i in self.adjDict:
+            print("\n" + str(src) + "-> " + str(i) + '\t' + str(distance[i]))
+            self.printChemin(parent, i)
+
+    def printChemin(self, parent, j):
+
+        if parent[j] == -1 or parent[j] == None:
+            return;
+        self.printChemin(parent,parent[j])
+        print('->' + str(j))
+
+    def extraireSousGraph(self,car,depart):
+        self.plusLongChemin(1,int(depart),16)

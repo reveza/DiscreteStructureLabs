@@ -5,6 +5,9 @@ import copy
 #     1: [Node(1,2,3,4), Node(1,3,4,5)],
 #     2: [Node(2,8,3,4), Node(2,3,4,5)],
 # }
+
+inf = float('inf')
+
 class Graph:
 
     def __init__(self, fileName):
@@ -57,11 +60,11 @@ class Graph:
         return True, path, energyFinal
 
     def dijkstra(self, source, energyDrop):
-        times = {key: 9999 for key in self.adjDict.keys()}
+        times = {key: inf for key in self.adjDict.keys()}
         times[source] = 0
         previous = {key: -1 for key in self.adjDict.keys()}
         energies = {key: -1 for key in self.adjDict.keys()}
-        energies[source] = 1
+        energies[source] = 100
         rechargeTime = 0
 
         edges = set(self.adjDict.keys())
@@ -84,16 +87,16 @@ class Graph:
                     energyLost = (x.time / 60) * energyDrop
 
                     energyLeft = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost
-
-                    if energyLeft >= 0.2 :
+                    print(energyLeft)
+                    if energyLeft >= 20 :
                         energies[x.dest] = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost
 
-                    elif energyLeft < 0.2 and x.recharge :
+                    elif energyLeft < 20 and x.recharge :
                         rechargeTime += 120
                         times[x.dest] += 120
-                        energies[x.dest] = energy[source] - energyLost
+                        energies[x.dest] = energies[source] - energyLost
                     
-                    elif energyLeft < 0.2 and not x.recharge:
+                    elif energyLeft < 20 and not x.recharge:
                         previous[x.dest] = tmpPrev
                         times[x.dest] = tmpTime
                         
@@ -101,11 +104,11 @@ class Graph:
 
     def dijkstraNi(self, source, destination, risk):
         if risk == 'faible':
-            energyDrop = 0.06
+            energyDrop = 6
         if risk == 'moyen':
-            energyDrop = 0.12
+            energyDrop = 12
         if risk == 'eleve':
-            energyDrop = 0.48
+            energyDrop = 48
 
         energies, previous, times, rechargeTime = self.dijkstra(source, energyDrop)        
 
@@ -118,11 +121,11 @@ class Graph:
 
     def dijkstraLi(self, source, destination, risk):
         if risk == 'faible':
-            energyDrop = 0.05
+            energyDrop = 5
         if risk == 'moyen':
-            energyDrop = 0.10
+            energyDrop = 10
         if risk == 'eleve':
-            energyDrop = 0.30
+            energyDrop = 30
 
         energies, previous, times, rechargeTime = self.dijkstra(source, energyDrop)
 

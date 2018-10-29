@@ -43,11 +43,14 @@ class Graph:
     def printNode(self, key, edges):
         print(f"({key}, ({', '.join([f'({x.dest}, {x.time})' for x in edges])}))")
 
-    def dijkstra(self, source, destination):
+    def dijkstra(self, source, energyDrop):
         times = {key: 9999 for key in self.adjDict.keys()}
-        previous = {key: -1 for key in self.adjDict.keys()}
-
         times[source] = 0
+        previous = {key: -1 for key in self.adjDict.keys()}
+        energies = {key: -1 for key in self.adjDict.keys()}
+        energies[source] = 1
+        rechargeTime = 0
+
         edges = set(self.adjDict.keys())
 
         while len(edges) > 0:
@@ -56,15 +59,76 @@ class Graph:
             edges.remove(current)
 
             for x in self.adjDict[current]:
-                if times[current] + x.time < times[x.dest]:
-                    times[x.dest] = times[current] + x.time
+                totalTime = times[current] + x.time
+                tmpTime = times[x.dest]
+                tmpPrev = previous[x.dest]
+                if totalTime < times[x.dest]:
+                    times[x.dest] = totalTime
                     previous[x.dest] = current
+
                     print(f"Time to dest: {times[x.dest]} from {x.dest}")
+
+                    energyLost = (x.time / 60) * energyDrop
+
+                    energyLeft = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost
+
+                    if energyLeft >= 0.2 :
+                        energies[x.dest] = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost
+
+                    elif energyLeft < 0.2 and current.recharge :
+                        rechargeTime += 120
+                        times[x.dest] += 120
+                        energies[x.dest] = energy[source] - energyLost
+                    
+                    elif energyLeft < 0.2 and not current.recharge:
+                        previous[x.dest] = tmpPrev
+                        times[x.dest] = tmpTime
+
+        return energies, previous, times, rechargeTime
+
+    def dijkstraNi(self, source, destination, risk):
+        if risk == 'faible':
+            energyDrop = 0.06
+        if risk == 'moyen':
+            energyDrop = 0.12
+        if risk == 'eleve':
+            energyDrop = 0.48
+
+        energies, previous, times, rechargeTime = self.dijkstra(source, energyDrop)        
 
         currPath = destination
         path = [currPath]
+        energyFinal = energies[destination]
         while currPath != source:
-            currPath = previous[currPath]
-            path.append(currPath)
+            if previous[currPath] is not -1:
+                currPath = previous[currPath]
+                path.append(currPath)
+            else:
+                self.dijkstraLi(source, destination, risk)
+                break
 
-        print(f"Cost: {times[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")
+        print(f"Vehicule: Ni, Recharge: {rechargeTime}, Energie finale: {energyFinal} , Temps: {times[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")
+        
+
+    def dijkstraLi(self, source, destination, risk):
+        if risk == 'faible':
+            energyDrop = 0.05
+        if risk == 'moyen':
+            energyDrop = 0.10
+        if risk == 'eleve':
+            energyDrop = 0.30
+
+        energies, previous, times, rechargeTime = self.dijkstra(source, energyDrop)
+
+        currPath = destination
+        path = [currPath]
+        energyFinal = energies[destination]
+        while currPath != source:
+            if previous[currPath] is not -1:
+                currPath = previous[currPath]
+                path.append(currPath)
+            else:
+                print('Refus du transport: Impossible de faire avec vehicule Ni ou Li')
+                break
+
+        print(f"Vehicule: Li, Recharge: {rechargeTime} Energie finale: {energyFinal}, Temps: {times[destination][-1]} Path: {' -> '.join([str(x) for x in reversed(path)])}")

@@ -120,3 +120,6 @@ class Graph:
 
     def extraireSousGraph(self,car,depart):
         self.plusLongChemin(1,int(depart),16)
+
+    def plusLong(self,départ):
+        

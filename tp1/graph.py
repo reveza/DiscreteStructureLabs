@@ -40,8 +40,13 @@ class Graph:
         file.close()
 
     def printGraph(self):
-        for key, edges in self.adjDict.items():
-            self.printNode(key, edges)
+        # affichage ordonnee pour le graph complet
+        if max(self.adjDict.keys()) == 29 and min(self.adjDict.keys()) == 1:
+            for key in range(min(self.adjDict.keys()), max(self.adjDict.keys()) + 1):
+                self.printNode(key, self.adjDict[key])
+        else:
+            for key, edges in self.adjDict.items():
+                self.printNode(key, edges)
 
     def printNode(self, key, edges):
         print(f"({key}, ({', '.join([f'({x.dest}, {x.time})' for x in edges])}))")
@@ -135,3 +140,42 @@ class Graph:
             print('Voyage pas possible')
         else:
             print(f"Vehicule: Li, Recharge: {rechargeTime} Energie finale: {energyFinal}, Temps: {times[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")
+
+    def extraireSousGraph(self, depart, car):
+
+        if car == 'NI-NH':
+            self.plusLongChemin(depart, 6)
+        elif car == 'LI-ion':
+            self.plusLongChemin(depart,5)
+        else: print('Vehicule inexistant')
+
+    def plusLongChemin(self, depart, drop):
+
+        chemin = [depart]
+        temps = 0
+        energie = 100
+        current = depart
+
+        chemin, temps, energie, current = self.ajoutChemin(chemin, temps, energie, current, drop)
+
+        print(f"(temps: {temps}, chemin: ({', '.join([f'({x})' for x in chemin])}))")
+
+    def ajoutChemin(self, chemin, temps, energie, current, drop):
+        plusGrandChemin = chemin + [current]
+        tempsMax = temps
+        nouvenergie = energie
+
+        for edge in self.adjDict[current]:
+            if not edge.dest in chemin:
+                energie = energie - edge.time / 60 * drop
+                if not (energie < 20):
+                    temps += edge.time
+                    chemin.append(edge.dest)
+                    current = edge.dest
+                    nouvchemin, nouvtemps, nouvenergie, current = self.ajoutChemin(chemin, temps, energie, current,
+                                                                                   drop)
+                    if tempsMax < nouvtemps:
+                        plusGrandChemin = chemin
+                        tempsMax = nouvtemps
+
+        return plusGrandChemin, tempsMax, nouvenergie, current

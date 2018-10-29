@@ -53,7 +53,7 @@ class Graph:
                 currPath = previous[currPath]
                 path.append(currPath)
             else:
-                return False
+                return False, None, None
         return True, path, energyFinal
 
     def dijkstra(self, source, energyDrop):
@@ -88,12 +88,12 @@ class Graph:
                     if energyLeft >= 0.2 :
                         energies[x.dest] = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost
 
-                    elif energyLeft < 0.2 and current.recharge :
+                    elif energyLeft < 0.2 and x.recharge :
                         rechargeTime += 120
                         times[x.dest] += 120
                         energies[x.dest] = energy[source] - energyLost
                     
-                    elif energyLeft < 0.2 and not current.recharge:
+                    elif energyLeft < 0.2 and not x.recharge:
                         previous[x.dest] = tmpPrev
                         times[x.dest] = tmpTime
                         

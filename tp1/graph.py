@@ -42,6 +42,19 @@ class Graph:
 
     def printNode(self, key, edges):
         print(f"({key}, ({', '.join([f'({x.dest}, {x.time})' for x in edges])}))")
+    
+    def rebuildPath(self, source, destination, previous, energies):
+        currPath = destination
+        path = [currPath]
+        energyFinal = energies[destination]
+
+        while currPath != source:
+            if previous[currPath] is not -1:
+                currPath = previous[currPath]
+                path.append(currPath)
+            else:
+                return False
+        return True, path, energyFinal
 
     def dijkstra(self, source, energyDrop):
         times = {key: 9999 for key in self.adjDict.keys()}
@@ -83,7 +96,7 @@ class Graph:
                     elif energyLeft < 0.2 and not current.recharge:
                         previous[x.dest] = tmpPrev
                         times[x.dest] = tmpTime
-
+                        
         return energies, previous, times, rechargeTime
 
     def dijkstraNi(self, source, destination, risk):
@@ -96,19 +109,12 @@ class Graph:
 
         energies, previous, times, rechargeTime = self.dijkstra(source, energyDrop)        
 
-        currPath = destination
-        path = [currPath]
-        energyFinal = energies[destination]
-        while currPath != source:
-            if previous[currPath] is not -1:
-                currPath = previous[currPath]
-                path.append(currPath)
-            else:
-                self.dijkstraLi(source, destination, risk)
-                break
+        isPossible, path, energyFinal = self.rebuildPath(source, destination, previous, energies)
 
-        print(f"Vehicule: Ni, Recharge: {rechargeTime}, Energie finale: {energyFinal} , Temps: {times[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")
-        
+        if not isPossible: 
+            self.dijkstraLi(source, destination, risk)
+        else:
+            print(f"Vehicule: Ni, Recharge: {rechargeTime}, Energie finale: {energyFinal} , Temps: {times[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")
 
     def dijkstraLi(self, source, destination, risk):
         if risk == 'faible':
@@ -120,15 +126,9 @@ class Graph:
 
         energies, previous, times, rechargeTime = self.dijkstra(source, energyDrop)
 
-        currPath = destination
-        path = [currPath]
-        energyFinal = energies[destination]
-        while currPath != source:
-            if previous[currPath] is not -1:
-                currPath = previous[currPath]
-                path.append(currPath)
-            else:
-                print('Refus du transport: Impossible de faire avec vehicule Ni ou Li')
-                break
+        isPossible, path, energyFinal = self.rebuildPath(source, destination, previous, energies)
 
-        print(f"Vehicule: Li, Recharge: {rechargeTime} Energie finale: {energyFinal}, Temps: {times[destination][-1]} Path: {' -> '.join([str(x) for x in reversed(path)])}")
+        if not isPossible: 
+            print('Voyage pas possible')
+        else:
+            print(f"Vehicule: Li, Recharge: {rechargeTime} Energie finale: {energyFinal}, Temps: {times[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")

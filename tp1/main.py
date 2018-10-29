@@ -8,7 +8,7 @@ graph1 = Graph('centresLocaux.txt')
 
 g = Graph("centresLocaux.txt")
 
-#g.printGraph()
+g.printGraph()
 start = 1
 destination = 23
 

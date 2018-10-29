@@ -1,4 +1,5 @@
 from edge import Edge
+from chemin import Chemin
 
 inf = float('inf')
 
@@ -34,11 +35,16 @@ class Graph:
         file.close()
 
     def printGraph(self):
-        for key, edges in self.adjDict.items():
-            self.printNode(key, edges)
+        #affichage ordonnee pour le graph complet
+        if max(self.adjDict.keys()) == 29 and min(self.adjDict.keys()) == 1:
+            for key in range(min(self.adjDict.keys()),max(self.adjDict.keys())+1):
+                self.printNode(key, self.adjDict[key])
+        else:
+            for key, edges in self.adjDict.items():
+                self.printNode(key, edges)
 
     def printNode(self, key, edges):
-        print(f"({key},  ({', '.join([f'({x.dest}, {x.time})' for x in edges])}))")
+        print(f"({key}, {int(edges[0].recharge)} ({', '.join([f'({x.dest}, {x.time})' for x in edges])}))")
 
     def dijkstra(self, source, destination):
         times = {key: 9999 for key in self.adjDict.keys()}
@@ -67,9 +73,8 @@ class Graph:
         print(f"Cost: {times[destination]} Path: {' -> '.join([str(x) for x in reversed(path)])}")
 
 
-    def plusLongChemin(self, categorie, depart, destination):
+    def plusCourtChemin(self, categorie, depart, destination):
 
-        print(str(self.adjDict[1][2].time))
         distance = [inf]
         cheminInclut = [None]
         parent = [None]
@@ -119,7 +124,13 @@ class Graph:
         print('->' + str(j))
 
     def extraireSousGraph(self,car,depart):
-        self.plusLongChemin(1,int(depart),16)
+        self.plusCourtChemin(1,int(depart),16)
 
-    def plusLong(self,départ):
-        
+        self.plusLongChemin(1,5)
+
+    def plusLongChemin(self,depart, drop):
+
+        chemins = {}
+
+        for edge in self.adjDict[depart]:
+            chemins[]

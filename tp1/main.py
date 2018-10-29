@@ -8,8 +8,8 @@ graph1 = Graph('centresLocaux.txt')
 
 g = Graph("centresLocaux.txt")
 
-g.printGraph()
-start = 1
+#g.printGraph()
+start = 3
 destination = 23
 
 graph1.extraireSousGraph(start,start)

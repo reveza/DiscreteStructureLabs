@@ -124,13 +124,35 @@ class Graph:
         print('->' + str(j))
 
     def extraireSousGraph(self,car,depart):
-        self.plusCourtChemin(1,int(depart),16)
+        #self.plusCourtChemin(1,int(depart),16)
 
-        self.plusLongChemin(1,5)
+        self.plusLongChemin(1,80)
 
     def plusLongChemin(self,depart, drop):
 
-        chemins = {}
+        chemin = [depart]
+        temps = 0
+        energie = 100
+        current = depart
 
-        for edge in self.adjDict[depart]:
-            chemins[]
+        chemin, temps, energie, current = self.ajoutChemin(chemin, temps, energie, current, drop)
+
+        print(f"(temps: {temps}, chemin: ({', '.join([f'({x})' for x in chemin])}))")
+
+    def ajoutChemin(self, chemin, temps, energie, current, drop):
+        plusGrandChemin = chemin + [current]
+        tempsMax = temps
+        nouvenergie = energie
+        if not (energie < 20):
+            for edge in self.adjDict[current]:
+                if not edge.dest in chemin:
+                    energie = energie - edge.time / 60 * drop
+                    temps += edge.time
+                    chemin.append(edge.dest)
+                    current = edge.dest
+                    nouvchemin, nouvtemps, nouvenergie, current = self.ajoutChemin(chemin, temps, energie, current, drop)
+                    if tempsMax < nouvtemps:
+                        plusGrandChemin = chemin
+                        tempsMax = nouvtemps
+                        print(tempsMax)
+        return plusGrandChemin, tempsMax, nouvenergie, current

@@ -84,11 +84,11 @@ class Graph:
 
             for x in self.adjDict[current]:                         # pour tous les sommets adjacents du somment courant
                 totalTime = times[current] + x.time                 # on ajoute le temps entre l'adj et le somment courant au total
-                tmpTime = times[x.dest]                             # ?
-                tmpPrev = previous[x.dest]                          # ?
-                if totalTime < times[x.dest]:                       # ?
-                    times[x.dest] = totalTime                       # ?
-                    previous[x.dest] = current                      # ?
+                tmpTime = times[x.dest]                             # ? valeur du temps avant de le changer a la ligne 90
+                tmpPrev = previous[x.dest]                          # ? valeur de previous avant de le changer a la ligne 90
+                if totalTime < times[x.dest]:                       # ? si le temps courrant + trajet node A vers B est plus petit que le temps des autres trajets pour se rendre au pointB
+                    times[x.dest] = totalTime                       # ? remettre ce nouveau trajet comme etant le plus court (voila pourquoi on l'ajoute ds le vecteurs Times[node])
+                    previous[x.dest] = current                      # ? idem pour previous.
 
                     print(f"Time to dest: {times[x.dest]} from {x.dest}")
 
@@ -102,11 +102,11 @@ class Graph:
                     elif energyLeft < 20 and x.recharge:                        # Si l'énergie est en bas de 20 et qu'il y a une borne de recharge
                         rechargeTime += 1                                       # On augmente le nombre de recharge
                         times[x.dest] += 120                                    # On prend en compte le temps de recharge
-                        energies[x.dest] = energies[source] - energyLost        # ?
+                        energies[x.dest] = energies[source] - energyLost        # ? EX: node A vers nodeB.  On recharge donc on repart avec une energie de 100% au nodeA (energie de la source), rendu au pt d'arrivee nodeB (dest), l'energie restante sera 100-energieDEpenserDuPointAauPointB 
                     
                     elif energyLeft < 20 and not x.recharge:                    # Si l'énergie est en bas de 20 et qu'il n'y a pas une borne de recharge
-                        previous[x.dest] = tmpPrev                              # ?
-                        times[x.dest] = tmpTime                                 # ?
+                        previous[x.dest] = tmpPrev                              # ? on avait change le previous a la ligne91, mais vu qu'on peut pas faire ce trajet, on ne veut pas l'ajouter comme etant un "bon" nouveau previous. donc on reaffecte la valeur precedente comme etant la meilleure.
+                        times[x.dest] = tmpTime                                 # ? same que la ligne au dessu mais pr le temps
                         
         return energies, previous, times, rechargeTime
 

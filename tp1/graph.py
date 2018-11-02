@@ -79,7 +79,6 @@ class Graph:
 
         while len(edges) > 0:
             current = min(edges, key=lambda edge: times[edge])      # on trouve le point le plus proche de l'origine
-            print(f"Current {current} time: {times[current]}")
             edges.remove(current)                                   # on l'enlève car il est visité
 
             for x in self.adjDict[current]:                         # pour tous les sommets adjacents du somment courant
@@ -90,14 +89,11 @@ class Graph:
                     times[x.dest] = totalTime                       # ? remettre ce nouveau trajet comme etant le plus court (voila pourquoi on l'ajoute ds le vecteurs Times[node])
                     previous[x.dest] = current                      # ? idem pour previous.
 
-                    print(f"Time to dest: {times[x.dest]} from {x.dest}")
-
                     energyLost = (x.time / 60) * energyDrop         # Calcul de l'énergie perdu dans le déplacement
 
-                    energyLeft = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost  # Énergie restante
-                    print(energyLeft)                                                                                              # Sinon c'est la source moins la perte d'énergie
+                    energyLeft = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost  # Énergie restante                                                                                           # Sinon c'est la source moins la perte d'énergie
                     if energyLeft >= 20:                                                                                                        # Si l'énergie est en bas de 20%
-                        energies[x.dest] = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost     # ?
+                        energies[x.dest] = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost
 
                     elif energyLeft < 20 and x.recharge:                        # Si l'énergie est en bas de 20 et qu'il y a une borne de recharge
                         rechargeTime += 1                                       # On augmente le nombre de recharge

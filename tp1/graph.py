@@ -190,7 +190,7 @@ class Graph:
 
         chemin, temps, energie, current = self.ajoutChemin(chemin, temps, energie, current, drop)
 
-        print(f"(temps: {temps}, chemin: ({', '.join([f'({x})' for x in chemin])}))")
+        print(f"(Temps: {temps}, chemin: ({', '.join([f'({x})' for x in chemin])}))")
 
         return chemin
 

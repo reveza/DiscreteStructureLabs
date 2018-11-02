@@ -68,45 +68,41 @@ class Graph:
         return True, path, energyFinal
 
     def dijkstra(self, source, energyDrop):
-        times = {key: inf for key in self.adjDict.keys()}
-        times[source] = 0
+        times = {key: inf for key in self.adjDict.keys()}           # mettre tous les temps à infini
+        times[source] = 0                                           # le temps à l'origine est 0
         previous = {key: -1 for key in self.adjDict.keys()}
         energies = {key: -1 for key in self.adjDict.keys()}
-        energies[source] = 100
+        energies[source] = 100                                      # la batterie à l'origine est à 0
         rechargeTime = 0
 
         edges = set(self.adjDict.keys())
 
         while len(edges) > 0:
-            current = min(edges, key=lambda edge: times[edge])
-            print(f"Current {current} time: {times[current]}")
-            edges.remove(current)
+            current = min(edges, key=lambda edge: times[edge])      # on trouve le point le plus proche de l'origine
+            edges.remove(current)                                   # on l'enlève car il est visité
 
-            for x in self.adjDict[current]:
-                totalTime = times[current] + x.time
-                tmpTime = times[x.dest]
-                tmpPrev = previous[x.dest]
-                if totalTime < times[x.dest]:
-                    times[x.dest] = totalTime
-                    previous[x.dest] = current
+            for x in self.adjDict[current]:                         # pour tous les sommets adjacents du somment courant
+                totalTime = times[current] + x.time                 # on ajoute le temps entre l'adj et le somment courant au total
+                tmpTime = times[x.dest]                             # ? valeur du temps avant de le changer a la ligne 90
+                tmpPrev = previous[x.dest]                          # ? valeur de previous avant de le changer a la ligne 90
+                if totalTime < times[x.dest]:                       # ? si le temps courrant + trajet node A vers B est plus petit que le temps des autres trajets pour se rendre au pointB
+                    times[x.dest] = totalTime                       # ? remettre ce nouveau trajet comme etant le plus court (voila pourquoi on l'ajoute ds le vecteurs Times[node])
+                    previous[x.dest] = current                      # ? idem pour previous.
 
-                    print(f"Time to dest: {times[x.dest]} from {x.dest}")
+                    energyLost = (x.time / 60) * energyDrop         # Calcul de l'énergie perdu dans le déplacement
 
-                    energyLost = (x.time / 60) * energyDrop
-
-                    energyLeft = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost
-                    print(energyLeft)
-                    if energyLeft >= 20 :
+                    energyLeft = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost  # Énergie restante                                                                                           # Sinon c'est la source moins la perte d'énergie
+                    if energyLeft >= 20:                                                                                                        # Si l'énergie est en bas de 20%
                         energies[x.dest] = energies[current] - energyLost if energies[current] is not -1 else energies[source] - energyLost
 
-                    elif energyLeft < 20 and x.recharge :
-                        rechargeTime += 1
-                        times[x.dest] += 120
-                        energies[x.dest] = energies[source] - energyLost
+                    elif energyLeft < 20 and x.recharge:                        # Si l'énergie est en bas de 20 et qu'il y a une borne de recharge
+                        rechargeTime += 1                                       # On augmente le nombre de recharge
+                        times[x.dest] += 120                                    # On prend en compte le temps de recharge
+                        energies[x.dest] = energies[source] - energyLost        # ? EX: node A vers nodeB.  On recharge donc on repart avec une energie de 100% au nodeA (energie de la source), rendu au pt d'arrivee nodeB (dest), l'energie restante sera 100-energieDEpenserDuPointAauPointB 
                     
-                    elif energyLeft < 20 and not x.recharge:
-                        previous[x.dest] = tmpPrev
-                        times[x.dest] = tmpTime
+                    elif energyLeft < 20 and not x.recharge:                    # Si l'énergie est en bas de 20 et qu'il n'y a pas une borne de recharge
+                        previous[x.dest] = tmpPrev                              # ? on avait change le previous a la ligne91, mais vu qu'on peut pas faire ce trajet, on ne veut pas l'ajouter comme etant un "bon" nouveau previous. donc on reaffecte la valeur precedente comme etant la meilleure.
+                        times[x.dest] = tmpTime                                 # ? same que la ligne au dessu mais pr le temps
                         
         return energies, previous, times, rechargeTime
 
@@ -162,7 +158,7 @@ class Graph:
                 energyDrop = 10
             elif risk == 'eleve':
                 energyDrop = 30
-            chemin = self.plusLongChemin(depart,energyDrop)
+            chemin = self.plusLongChemin(depart, energyDrop)
         else: print('Vehicule inexistant')
 
         # Pour pouvoir creer un nouveau graph on a besoin des temps entre les sommets, et les recharges, qu'on obtient

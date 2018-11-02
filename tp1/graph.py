@@ -109,10 +109,13 @@ class Graph:
     def dijkstraNi(self, source, destination, risk):
         if risk == 'faible':
             energyDrop = 6
-        if risk == 'moyen':
+        elif risk == 'moyen':
             energyDrop = 12
-        if risk == 'eleve':
+        elif risk == 'eleve':
             energyDrop = 48
+        else:
+            print("Mauvaise entree")
+            return
 
         energies, previous, times, rechargeTime = self.dijkstra(source, energyDrop)        
 
@@ -126,10 +129,13 @@ class Graph:
     def dijkstraLi(self, source, destination, risk):
         if risk == 'faible':
             energyDrop = 5
-        if risk == 'moyen':
+        elif risk == 'moyen':
             energyDrop = 10
-        if risk == 'eleve':
+        elif risk == 'eleve':
             energyDrop = 30
+        else:
+            print("Mauvaise entree")
+            return
 
         energies, previous, times, rechargeTime = self.dijkstra(source, energyDrop)
 
@@ -159,7 +165,9 @@ class Graph:
             elif risk == 'eleve':
                 energyDrop = 30
             chemin = self.plusLongChemin(depart, energyDrop)
-        else: print('Vehicule inexistant')
+        else:
+            print('Vehicule inexistant')
+            return
 
         # Pour pouvoir creer un nouveau graph on a besoin des temps entre les sommets, et les recharges, qu'on obtient
         # des edges contenus dans le graph principale
@@ -189,7 +197,6 @@ class Graph:
         print(f"(Temps: {temps}, chemin: ({', '.join([f'({x})' for x in chemin])}))")
 
         return chemin
-
 
 
 

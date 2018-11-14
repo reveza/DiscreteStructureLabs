@@ -17,4 +17,9 @@ class Node:
             self.addNext(letter)
         return self.getNext(letter)
 
-    #def print(self):
+    def isEmpty(self):
+        if self.nextLettres:
+            return True
+        else:
+            return False
+

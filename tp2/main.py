@@ -3,4 +3,4 @@ from Automats import Automates
 
 auto = Automates("lexique5.txt")
 
-auto.print()
+auto.printFromCurrentNode()

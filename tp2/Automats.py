@@ -28,8 +28,10 @@ class Automates:
     def printFromCurrentNode(self, string):
         mots = []
         self.printLettre(self.currentNode, string, mots)
+        text = ""
         for mot in mots:
-            print(mot)
+            text += (mot + "\n")
+        return text
 
     def printLettre(self, node, string, mots):
 

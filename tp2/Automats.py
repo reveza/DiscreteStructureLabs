@@ -21,6 +21,12 @@ class Automates:
                         self.currentNode = self.currentNode.next(letter)
             self.currentNode = self.depart
 
+    def backToStart(self):
+        self.currentNode = self.depart
+
+    def nextNode(self, letter):
+        self.currentNode = self.currentNode.next(letter)
+
     def print(self): #Pour vérifier que l'automate a bien marcher
         for letter in self.depart.nextLettres.keys():
             print(letter)

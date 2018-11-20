@@ -15,8 +15,9 @@ class GUI(Frame):
 
     def on_entry(self, event):
         words = self.entry.get()
-        self.automates.currentNode = self.automates.depart
+        self.automates.backToStart()
+        words = words.split(' ')[-1]
         for l in words:
-            self.automates.currentNode = self.automates.currentNode.next(l)
+            self.automates.nextNode(l)
         self.text.replace(1.0, END, self.automates.printFromCurrentNode(words))
         self.text.pack()

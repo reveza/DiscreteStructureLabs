@@ -9,6 +9,6 @@ print(auto.printFromCurrentNode('ami'))
 auto.currentNode = auto.depart
 
 root = Tk()
-root.geometry('200x200')
+root.geometry('300x300')
 gui = GUI(root, auto)
 gui.mainloop()

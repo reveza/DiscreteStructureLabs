@@ -5,7 +5,7 @@ class GUI(Frame):
     def __init__(self, master=None, graph = None):
         Frame.__init__(self, master)
         self.sv = StringVar()
-        self.text = Text(self, width = 34)
+        self.text = Text(self, width = 35)
         self.entry = Entry(self, textvariable = self.sv, width = 46)
         self.entry.bind("<KeyRelease>", self.on_entry)
         self.entry.bind('<Return>', self.on_enter)

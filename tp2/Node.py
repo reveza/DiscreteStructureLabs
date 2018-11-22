@@ -2,6 +2,7 @@ class Node:
 
     def __init__(self):
         self.nextLettres = {}
+        self.finish = False
 
     def getNext(self, lettre):
         return self.nextLettres[lettre]
@@ -23,3 +24,8 @@ class Node:
         else:
             return False
 
+    def setFinish(self):
+        self.finish=True
+
+    def getFinish(self):
+        return self.finish

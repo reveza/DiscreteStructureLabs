@@ -20,6 +20,7 @@ class Automates:
                 for letter in line:
                     if letter != '\n':
                         self.currentNode = self.currentNode.next(letter)
+                self.currentNode.setFinish()
             self.currentNode = self.depart
 
     def backToStart(self):
@@ -44,7 +45,7 @@ class Automates:
 
         for next in node.nextLettres:
             stringtmp = string + next
-            if self.mots.__contains__(stringtmp):
+            if node.nextLettres[next].getFinish():
                 mots.append(stringtmp)
             mots = self.printLettre(node.nextLettres[next], stringtmp, mots)
         return mots

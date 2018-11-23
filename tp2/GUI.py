@@ -21,12 +21,12 @@ class GUI(Frame):
 
         for l in words:
             self.automates.nextNode(l)
-        self.text.replace(1.0, END, self.automates.printFromCurrentNode(words))
+        self.text.replace(1.0, END, self.automates.printFromCurrentState(words))
         self.text.pack()
 
     def on_enter(self, event):
         wordsWrited = self.entry.get()
         words = wordsWrited.split(' ')
         for wor in words:
-            self.automates.addCount(wor)
+            self.automates.incrementWordCount(wor)
         self.entry.delete(0, END)

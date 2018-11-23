@@ -1,67 +1,63 @@
 from Node import Node
 
 class Automates:
-
     def __init__(self, filename):
-        self.depart = Node()
-        self.currentNode = self.depart
-        self.mots = {}
+        self.start = Node()
+        self.currentState = self.start
+        self.words = {}
         self.readFile(filename)
         self.lastWords = []
 
-
     def readFile(self, filename):
-
         with open(filename) as file:
             for line in file:
                 line = line.strip()
-                self.mots[line] = [0,0]
-                self.currentNode = self.depart
+                self.words[line] = [0,0]
+                self.currentState = self.start
                 for letter in line:
                     if letter != '\n':
-                        self.currentNode = self.currentNode.next(letter)
-                self.currentNode.setFinish()
-            self.currentNode = self.depart
+                        self.currentState = self.currentState.next(letter)
+                self.currentState.setFinish()
+            self.currentState = self.start
 
     def backToStart(self):
-        self.currentNode = self.depart
+        self.currentState = self.start
 
     def nextNode(self, letter):
-        self.currentNode = self.currentNode.next(letter)
+        self.currentState = self.currentState.next(letter)
 
     def print(self): #Pour vérifier que l'automate a bien marcher
-        for letter in self.depart.nextLettres.keys():
+        for letter in self.start.nextState.keys():
             print(letter)
 
-    def printFromCurrentNode(self, string):
-        mots = []
-        self.printLettre(self.currentNode, string, mots)
+    def printFromCurrentState(self, string):
+        words = []
+        self.printLetter(self.currentState, string, words)
         text = ""
-        for mot in mots:
-            text += (mot + "\t\tused:" + str(self.mots[mot][0]) + " last 5: " + ('yes' if self.mots[mot][1] else 'no')  +"\n")
+        for mot in words:
+            text += (mot + "\t\tused:" + str(self.words[mot][0]) + " last 5: " + ('yes' if self.words[mot][1] else 'no')  +"\n")
         return text
 
-    def printLettre(self, node, string, mots):
+    def printLetter(self, node, string, words):
+        for letter in node.nextState:
+            stringtmp = string + letter
+            if node.nextState[letter].isFinished():
+                words.append(stringtmp)
+            words = self.printLetter(node.nextState[letter], stringtmp, words)
+        return words
 
-        for next in node.nextLettres:
-            stringtmp = string + next
-            if node.nextLettres[next].getFinish():
-                mots.append(stringtmp)
-            mots = self.printLettre(node.nextLettres[next], stringtmp, mots)
-        return mots
+    def resetLastFive(self):
+        for mot in self.words:
+            self.words[mot][1] = 0
 
-    def reset(self):
-        for mot in self.mots:
-            self.mots[mot][1] = 0
+    def incrementWordCount(self, word):
+        if self.words.__contains__(word):
+            self.words[word][0] += 1
+            self.getLastFive(word)
 
-    def addCount(self, word):
-        if self.mots.__contains__(word):
-            self.mots[word][0] += 1
-            self.lastFive(word)
-
-    def lastFive(self, word):
+    def getLastFive(self, word):
         self.lastWords.append(word)
-        self.reset()
+        self.resetLastFive()
         for w in range(-5,0):
             if (-w) <= len(self.lastWords):
-                self.mots[self.lastWords[w]][1] = 1
+                self.words[self.lastWords[w]][1] = 1

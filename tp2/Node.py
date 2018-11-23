@@ -1,17 +1,17 @@
 class Node:
 
     def __init__(self):
-        self.nextLettres = {}
+        self.nextState = {}
         self.finish = False
 
-    def getNext(self, lettre):
-        return self.nextLettres[lettre]
+    def getNext(self, letter):
+        return self.nextState[letter]
 
-    def hasNext(self, lettre):
-        return lettre in self.nextLettres
+    def hasNext(self, letter):
+        return letter in self.nextState
 
-    def addNext(self, lettre):
-        self.nextLettres[lettre] = Node()
+    def addNext(self, letter):
+        self.nextState[letter] = Node()
 
     def next(self,letter):
         if not self.hasNext(letter):
@@ -19,7 +19,7 @@ class Node:
         return self.getNext(letter)
 
     def isEmpty(self):
-        if self.nextLettres:
+        if self.nextState:
             return True
         else:
             return False
@@ -27,5 +27,5 @@ class Node:
     def setFinish(self):
         self.finish=True
 
-    def getFinish(self):
+    def isFinished(self):
         return self.finish
